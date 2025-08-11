@@ -1,8 +1,10 @@
 package mx.edu.utez.vehicleManager.module.vehicle;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import mx.edu.utez.vehicleManager.utils.Utilities;
 import mx.edu.utez.vehicleManager.module.brand.BrandModel;
 import mx.edu.utez.vehicleManager.module.brand.IBrandRepository;
+import mx.edu.utez.vehicleManager.module.service.IServiceRepository;
+import mx.edu.utez.vehicleManager.module.service.ServiceModel;
 
 @Service
 @Primary
@@ -21,10 +25,13 @@ public class VehicleService {
 
     private final IVehicleRepository vehicleRepository;
     private final IBrandRepository brandRepository;
+    private final IServiceRepository serviceRepository;
 
-    public VehicleService(IVehicleRepository vehicleRepository, IBrandRepository brandRepository) {
+    public VehicleService(IVehicleRepository vehicleRepository, IBrandRepository brandRepository,
+            IServiceRepository serviceRepository) {
         this.vehicleRepository = vehicleRepository;
         this.brandRepository = brandRepository;
+        this.serviceRepository = serviceRepository;
     }
 
     @Transactional(readOnly = true)
@@ -41,14 +48,38 @@ public class VehicleService {
     }
 
     @Transactional
-    public ResponseEntity<Object> save(VehicleModel vehicle) {
+    public ResponseEntity<Object> save(VehicleDto dto) {
         try {
-            Optional<BrandModel> brandOpt = brandRepository.findById(vehicle.getBrand().getId());
-            if (!brandOpt.isPresent()) {
-                return Utilities.generateResponse(HttpStatus.NOT_FOUND, "No se encontró la marca", null);
-            }
-            vehicle.setBrand(brandOpt.get());
+            // Create new VehicleModel from DTO
+            VehicleModel vehicle = new VehicleModel();
+            vehicle.setModel(dto.getModel());
+            vehicle.setColor(dto.getColor());
+            vehicle.setPrice(dto.getPrice());
             vehicle.setRegistration_date(LocalDate.now());
+            
+            // Set brand if provided
+            if (dto.getBrandId() != null) {
+                Optional<BrandModel> brandOpt = brandRepository.findById(dto.getBrandId());
+                if (!brandOpt.isPresent()) {
+                    return Utilities.generateResponse(HttpStatus.NOT_FOUND, "No se encontró la marca", null);
+                }
+                vehicle.setBrand(brandOpt.get());
+            } else {
+                return Utilities.generateResponse(HttpStatus.BAD_REQUEST, "La marca es obligatoria", null);
+            }
+            
+            // Map service IDs to managed entities
+            if (dto.getServiceIds() != null && !dto.getServiceIds().isEmpty()) {
+                List<ServiceModel> managedServices = dto.getServiceIds().stream()
+                        .map(serviceRepository::findById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toList());
+                vehicle.setServices(managedServices);
+            } else {
+                vehicle.setServices(new ArrayList<>());
+            }
+            
             VehicleModel saved = vehicleRepository.save(vehicle);
             return Utilities.generateResponse(HttpStatus.CREATED, "Vehículo registrado correctamente", saved);
         } catch (Exception e) {
@@ -70,6 +101,19 @@ public class VehicleService {
                         }
                         if (dto.getPrice() != null) {
                             existingVehicle.setPrice(dto.getPrice());
+                        }
+                        // Update services if provided
+                        if (dto.getServiceIds() != null) {
+                            if (!dto.getServiceIds().isEmpty()) {
+                                List<ServiceModel> managedServices = dto.getServiceIds().stream()
+                                        .map(serviceRepository::findById)
+                                        .filter(Optional::isPresent)
+                                        .map(Optional::get)
+                                        .collect(Collectors.toList());
+                                existingVehicle.setServices(managedServices);
+                            } else {
+                                existingVehicle.setServices(new ArrayList<>());
+                            }
                         }
                         VehicleModel updated = vehicleRepository.save(existingVehicle);
                         return Utilities.generateResponse(HttpStatus.OK, "Vehículo actualizado exitosamente", updated);
