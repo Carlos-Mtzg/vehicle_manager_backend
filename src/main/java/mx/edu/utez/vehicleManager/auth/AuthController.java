@@ -33,14 +33,13 @@ public class AuthController {
         return authService.login(request);
     }
 
-    @PostMapping("/register")
-    @Operation(summary = "Registro de usuario", description = "Registra un nuevo usuario y retorna un token JWT si el registro es exitoso.")
-    @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente")
-    @ApiResponse(responseCode = "400", description = "Datos inválidos o el usuario ya existe")
-    @ApiResponse(responseCode = "404", description = "Rol de usuario no encontrado")
+    @PostMapping("/recover-password")
+    @Operation(summary = "Recuperación de contraseña", description = "Permite solicitar la recuperación de contraseña enviando el correo registrado. Si el correo existe, se genera una nueva contraseña temporal y se envía al usuario por correo electrónico.")
+    @ApiResponse(responseCode = "200", description = "Recuperación exitosa")
+    @ApiResponse(responseCode = "404", description = "No se encontró el usuario")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Object> register(@RequestBody @Valid RegisterRequest request) {
-        return authService.register(request);
+    public ResponseEntity<Object> recoverPassword(@RequestBody @Valid RecoverPassword request) {
+        return authService.recoverPassword(request);
     }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import mx.edu.utez.vehicleManager.auth.AuthService;
+import mx.edu.utez.vehicleManager.auth.RegisterRequest;
 
 @RestController
 @RequestMapping("/api/user")
@@ -21,9 +24,11 @@ import jakarta.validation.Valid;
 public class UserController {
 
     private final UserService userService;
+    private final AuthService authService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AuthService authService) {
         this.userService = userService;
+        this.authService = authService;
     }
 
     @GetMapping("")
@@ -39,6 +44,16 @@ public class UserController {
     @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     public ResponseEntity<Object> getUserById(@PathVariable("id") Long id) {
         return userService.getUserById(id);
+    }
+
+    @PostMapping("")
+    @Operation(summary = "Registro de usuario", description = "Registra un nuevo usuario y retorna un token JWT si el registro es exitoso.")
+    @ApiResponse(responseCode = "201", description = "Usuario registrado correctamente")
+    @ApiResponse(responseCode = "400", description = "Datos inválidos o el usuario ya existe")
+    @ApiResponse(responseCode = "404", description = "Rol de usuario no encontrado")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    public ResponseEntity<Object> register(@RequestBody @Valid RegisterRequest request) {
+        return authService.register(request);
     }
 
     @PutMapping("/{id}")

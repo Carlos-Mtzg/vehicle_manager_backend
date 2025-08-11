@@ -31,7 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/register").hasAuthority("ADMIN")
+                        .requestMatchers("/auth/recover-password").permitAll()
                         .requestMatchers("/api/user/change-password/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .requestMatchers("/api/user/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/brand/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
@@ -39,6 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/employee/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .requestMatchers("/api/service/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .requestMatchers("/api/vehicle/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
+                        .requestMatchers("/api/sale/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .anyRequest().authenticated())
                 .sessionManagement(
                         sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

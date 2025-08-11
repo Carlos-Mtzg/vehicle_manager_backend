@@ -27,6 +27,7 @@ public class VehicleDto {
 
     private LocalDate saleDate;
     private Long customerId;
+    private Long brandId;
     private List<Long> serviceIds;
 
     public String getModel() {
@@ -67,6 +68,14 @@ public class VehicleDto {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
+    }
+
+    public Long getBrandId() {
+        return brandId;
+    }
+
+    public void setBrandId(Long brandId) {
+        this.brandId = brandId;
     }
 
     public List<Long> getServiceIds() {

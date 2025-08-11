@@ -17,6 +17,11 @@ Backend desarrollado en Java con Spring Boot para la gestión de vehículos, mar
   - Cambio de contraseña disponible para usuarios con rol `ADMIN` y `EMPLOYEE`.
   - Endpoints para habilitar/deshabilitar usuarios.
   - Usuario administrador creado automáticamente en el arranque si no existe.
+- **Envío de correos electrónicos (Mailer):**
+  - Envío automático de correo con contraseña temporal al registrar un usuario.
+  - Recuperación de contraseña por correo electrónico.
+- **Documentación interactiva con Swagger/OpenAPI:**
+  - Consulta y prueba de endpoints desde `/swagger-ui.html` o `/swagger-ui/index.html`.
 
 ## Instalación y Ejecución
 
@@ -26,11 +31,17 @@ Backend desarrollado en Java con Spring Boot para la gestión de vehículos, mar
    cd vehicleManager_backend
    ```
 
-2. Configura la conexión a la base de datos en `src/main/resources/application.properties`:
+2. Configura la conexión a la base de datos y el correo en `src/main/resources/application.properties`:
    ```
    db.url=jdbc:mysql://localhost:3306/vehicle_manager
    db.username=tu_usuario
    db.password=tu_contraseña
+
+   # Configuración de correo
+   email.sender=tu_correo@gmail.com
+   email.password=tu_contraseña_correo
+   mail.host=smtp.gmail.com
+   mail.port=587
    ```
 
 3. Ejecuta la aplicación:
@@ -38,11 +49,16 @@ Backend desarrollado en Java con Spring Boot para la gestión de vehículos, mar
    ./mvnw spring-boot:run
    ```
 
+4. Accede a la documentación Swagger:
+   - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+   - [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
 ## Endpoints Principales
 
 - **Autenticación**
   - `POST /auth/login` - Login de usuario, retorna JWT.
-  - `POST /auth/register` - Registro de usuario (solo ADMIN).
+  - `POST /auth/register` - Registro de usuario (solo ADMIN, envía contraseña temporal por correo).
+  - `POST /auth/recover-password` - Recuperación de contraseña (envía nueva contraseña temporal por correo).
 - **Usuarios**
   - `GET /api/user` - Listar usuarios (solo ADMIN).
   - `GET /api/user/{id}` - Obtener usuario por ID (solo ADMIN).
@@ -86,7 +102,7 @@ Backend desarrollado en Java con Spring Boot para la gestión de vehículos, mar
   - `GET /api/vehicle/sold/count` - Obtener cantidad de autos vendidos
   - `GET /api/vehicle/available/count` - Obtener cantidad de autos disponibles
 
-*(Consulta los controladores para más endpoints)*
+*(Consulta los controladores y la documentación Swagger para más endpoints y detalles)*
 
 ## Ejemplo de JSON para POST
 

@@ -32,11 +32,6 @@ public class RegisterRequest {
     @Size(max = 50, message = "Este campo no puede tener más de 50 caracteres")
     private String username;
 
-    @NotBlank(message = NOT_BLANK_MESSAGE)
-    @Pattern(regexp = "^[^<>]*$", message = NO_ANGLE_BRACKETS_MESSAGE)
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
-    private String password;
-
     private boolean enabled = true;
 
     private Long roleId;
@@ -44,13 +39,12 @@ public class RegisterRequest {
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String fullName, String phone, String email, String username, String password,
+    public RegisterRequest(String fullName, String phone, String email, String username,
             boolean enabled, Long roleId) {
         this.fullName = fullName;
         this.phone = phone;
         this.email = email;
         this.username = username;
-        this.password = password;
         this.enabled = enabled;
         this.roleId = roleId;
     }
@@ -85,14 +79,6 @@ public class RegisterRequest {
 
     public void setUsername(String username) {
         this.username = username != null ? username.trim() : null;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password != null ? password.trim() : null;
     }
 
     public boolean isEnabled() {

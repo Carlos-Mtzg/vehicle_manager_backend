@@ -18,7 +18,23 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import mx.edu.utez.vehicleManager.module.employee.EmployeeModel;
 import mx.edu.utez.vehicleManager.module.vehicle.VehicleModel;
+import io.swagger.v3.oas.annotations.media.Schema; 
 
+@Schema(
+    description = "Modelo que representa a un cliente de la agencia automotriz",
+    example = """
+    {
+      "id": 1,
+      "full_name": "Juan Pérez",
+      "phone": "5551234567",
+      "email": "juan.perez@email.com",
+      "employee": {
+        "id": 2,
+        "full_name": "Ana López"
+      }
+    }
+    """
+)
 @Entity
 @Table(name = "customer")
 public class CustomerModel {
