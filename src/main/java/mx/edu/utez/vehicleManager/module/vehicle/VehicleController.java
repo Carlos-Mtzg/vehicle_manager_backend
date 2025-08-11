@@ -48,7 +48,7 @@ public class VehicleController {
     @ApiResponse(responseCode = "201", description = "Vehículo registrado correctamente")
     @ApiResponse(responseCode = "404", description = "No se encontró la marca")
     @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    public ResponseEntity<Object> createVehicle(@RequestBody @Valid VehicleModel request) {
+    public ResponseEntity<Object> createVehicle(@RequestBody @Valid VehicleDto request) {
         return vehicleService.save(request);
     }
 
