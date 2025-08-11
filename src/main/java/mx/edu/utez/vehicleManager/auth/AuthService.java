@@ -117,7 +117,8 @@ public class AuthService {
                                         "Tu usuario ha sido registrado exitosamente en VehicleManager.\n\n" +
                                         "Usuario: " + request.getUsername() + "\n" +
                                         "Contraseña temporal: " + temporaryPassword + "\n\n" +
-                                        "Por favor, cambia tu contraseña después de iniciar sesión en la opción de tu perfil.\n\n" +
+                                        "Por favor, cambia tu contraseña después de iniciar sesión en la opción de tu perfil.\n\n"
+                                        +
                                         "Saludos,\nEl equipo de VehicleManager";
                         try {
                                 mailService.sendEmail(request.getEmail(), subject, message);
@@ -134,4 +135,38 @@ public class AuthService {
                 }
         }
 
+        @Transactional
+        public ResponseEntity<Object> recoverPassword(RecoverPassword request) {
+                try {
+                        Optional<EmployeeModel> emplyeeOpt = employeeRepository.findByEmail(request.getEmail());
+                        if (!emplyeeOpt.isPresent()) {
+                                return Utilities.generateResponse(HttpStatus.NOT_FOUND,
+                                                "No se encontró correo asignado a este usuario", null);
+                        }
+
+                        EmployeeModel employee = emplyeeOpt.get();
+                        Optional<UserModel> userOpt = userRepository.findByEmployee(employee);
+                        UserModel user = userOpt.get();
+
+                        String temporaryPassword = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+                        user.setPassword(passwordEncoder.encode(temporaryPassword));
+
+                        String subject = "Recuperación de contraseña";
+                        String message = "¡Tu contraseña se actualizó correctamente!\n\n" +
+                                        "Contraseña temporal: " + temporaryPassword + "\n\n" +
+                                        "Por favor, cambia tu contraseña después de iniciar sesión en la opción de tu perfil.\n\n"
+                                        +
+                                        "Saludos,\nEl equipo de VehicleManager";
+                        try {
+                                mailService.sendEmail(request.getEmail(), subject, message);
+                        } catch (Exception ex) {
+                                throw new RuntimeException(
+                                                "No se pudo enviar el correo de registro: " + ex.getMessage(), ex);
+                        }
+                        return Utilities.generateResponse(HttpStatus.OK, "La contraseña se actualizó con éxito", null);
+                } catch (Exception e) {
+                        return Utilities.authResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                                        "Ocurrió un error inesperado", null);
+                }
+        }
 }

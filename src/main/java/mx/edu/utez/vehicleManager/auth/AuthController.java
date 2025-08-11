@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,6 +31,15 @@ public class AuthController {
     @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     public ResponseEntity<Object> login(@RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    @PostMapping("/recover-password")
+    @Operation(summary = "Recuperación de contraseña", description = "Permite solicitar la recuperación de contraseña enviando el correo registrado. Si el correo existe, se genera una nueva contraseña temporal y se envía al usuario por correo electrónico.")
+    @ApiResponse(responseCode = "200", description = "Recuperación exitosa")
+    @ApiResponse(responseCode = "404", description = "No se encontró el usuario")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    public ResponseEntity<Object> recoverPassword(@RequestBody @Valid RecoverPassword request) {
+        return authService.recoverPassword(request);
     }
 
 }

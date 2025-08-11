@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/recover-password").permitAll()
                         .requestMatchers("/api/user/change-password/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .requestMatchers("/api/user/**").hasAuthority("ADMIN")
                         .requestMatchers("/api/brand/**").hasAnyAuthority("ADMIN", "EMPLOYEE")
