@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -66,7 +65,6 @@ public class VehicleModel {
 
     @ManyToMany
     @JoinTable(name = "vehicle_has_services", joinColumns = @JoinColumn(name = "car_id"), inverseJoinColumns = @JoinColumn(name = "service_id"))
-    @JsonIgnore
     private List<ServiceModel> services;
 
     public Long getId() {
